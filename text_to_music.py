@@ -220,6 +220,56 @@ def Raag_check(notestring, aaroha=[], avroha=[]):
     else:
         return False
 
+def AddTabla(bols, file, Safrequency, tempo, channel,volume):
+    pitch=60
+    time=0
+    duration=1
+    defaultduration=1
+    for i in range(1,11):
+        file.addTempo(i, time, tempo)
+
+    bols=bols.split(" ")
+    print(bols)
+
+
+    for x in bols:
+        if x=='Ta':
+            file.addProgramChange(1, channel, time, 116)
+            file.addNote(1, channel, pitch, time, duration, volume)
+        elif x=='Dha':
+            file.addProgramChange(2, channel, time, 117)
+            file.addNote(2, channel, pitch, time, duration, volume)
+        elif x=='Tun':
+            file.addProgramChange(3, channel, time, 118)
+            file.addNote(3, channel, pitch, time, duration, volume)
+        elif x=='Tta':
+            file.addProgramChange(4, channel, time, 119)
+            file.addNote(4, channel, pitch, time, duration, volume)
+        elif x=='Dhin':
+            file.addProgramChange(5, channel, time, 120)
+            file.addNote(5, channel, pitch, time, duration, volume)
+        elif x=='Na':
+            file.addProgramChange(6, channel, time, 121)
+            file.addNote(6, channel, pitch, time, duration, volume)
+        elif x=="Ga" or x=='Ge':
+            file.addProgramChange(7, channel, time, 122)
+            file.addNote(7, channel, pitch, time, duration, volume)
+        elif x=='Di':
+            file.addProgramChange(8, channel, time, 123)
+            file.addNote(8, channel, pitch, time, duration, volume)
+        elif x=='Ka' or x=='Ke':
+            file.addProgramChange(9, channel, time, 124)
+            file.addNote(9, channel, pitch, time, duration, volume)
+        elif x=='Tin':
+            file.addProgramChange(10, channel, time, 125)
+            file.addNote(10, channel, pitch, time, duration, volume)
+        elif x=='x' :
+            pass
+        else :
+            time -= duration
+        time += duration
+    return  
+
 
 
 
@@ -231,7 +281,7 @@ def Raag_check(notestring, aaroha=[], avroha=[]):
 
 # # print( Raag_check("S R_ R G_ G M M' P D_ D N_ N" , ['R_' , 'R','G_', 'G' , 'M', "M'",'P','D_', 'D' , 'N_', 'N', 'a'],['a', 'S', 'R_', 'R', 'G_', 'G', 'M', "M'", 'P','D_','D','N_']))
 
-
+#AddTabla("Dha Dhin Dhin Dha Dha Dhin Dhin Dha Dha Tin Tin Na Na Dhin Dhin Dha",test,262,200,0,100)
 # with open("testmusic.mid", "wb") as output_file:
 #     test.writeFile(output_file)
 
