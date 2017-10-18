@@ -1,41 +1,106 @@
 from midiutil import MIDIFile
+import re
+chosennotes=[]
+
+def notepitch(x):
+    if x=='S':
+        return 0
+    elif x=='R_':
+        return 1
+    elif x=='R':
+        return 2
+    elif x=='G_':
+        return 3
+    elif x=='G':
+        return 4
+    elif x=='M':
+        return 5
+    elif x=="M'":
+        return 6
+    elif x=='P':
+        return 7
+    elif x=='D_':
+        return 8
+    elif x=='D':
+        return 9
+    elif x=='N_':
+        return 10
+    elif x=='N':
+        return 11
+    else:
+        return -1
 
 def AddNote(x, file, track, duration, volume, channel, pitch, time):
-    
-    i=0
-    while x[i]=='.' :
-        i=i+1
-    j=0
-    while x[j+ len(x) -1]=='.':
-        j=j-1
+    global chosennotes
+    n=19
+    if notepitch(x)!=-1:
+        i=0
+        while x[i]=='.' :
+            i=i+1
+        j=0
+        while x[j+ len(x) -1]=='.':
+            j=j-1
+        x=x.strip('.')
+        pitch += (-i -j)*12
+        file.addNote(track, channel, pitch + notepitch(x), time, duration, volume)
+    elif re.search("\^",x):
+        x=re.split("\^",x)
 
-    
-    x=x.strip('.')
-    pitch += (-i -j)*12
-    if x=='S':
-        file.addNote(track, channel, pitch, time, duration, volume)
-    elif x=='R_':
-        file.addNote(track, channel, pitch + 1, time, duration, volume)
-    elif x=='R':
-        file.addNote(track, channel, pitch + 2, time, duration, volume)
-    elif x=='G_':
-        file.addNote(track, channel, pitch + 3, time, duration, volume)
-    elif x=='G':
-        file.addNote(track, channel, pitch + 4, time, duration, volume)
-    elif x=='M':
-        file.addNote(track, channel, pitch + 5, time, duration, volume)
-    elif x=="M'":
-        file.addNote(track, channel, pitch + 6, time, duration, volume)
-    elif x=='P':
-        file.addNote(track, channel, pitch + 7, time, duration, volume)
-    elif x=='D_':
-        file.addNote(track, channel, pitch + 8, time, duration, volume)
-    elif x=='D':
-        file.addNote(track, channel, pitch + 9, time, duration, volume)
-    elif x=='N_':
-        file.addNote(track, channel, pitch + 10, time, duration, volume)
-    elif x=='N':
-        file.addNote(track, channel, pitch + 11, time, duration, volume)
+        i=0
+        while x[0][i]=='.' :
+            i=i+1
+        j=0
+        while x[0][j+ len(x[0]) -1]=='.':
+            j=j-1
+        start=pitch+(-i -j)*12+notepitch(x[0].strip('.'))
+        i=0
+        while x[1][i]=='.' :
+            i=i+1
+        j=0
+        while x[1][j+ len(x[1]) -1]=='.':
+            j=j-1
+        pitch += (-i -j)*12
+        end=pitch+notepitch(x[1].strip('.'))
+        for a,b in chosennotes:
+                if a==start:
+                    startfreq=b
+                if a==end:
+                    endfreq=b
+
+        ratio=endfreq/startfreq
+        step=ratio**(1/n)
+        meend=[]
+        for k in range(1,n+1):
+            meend.append((k,startfreq*step**k))
+        file.changeNoteTuning(track,meend)
+        for k in range(1,n+1):
+            file.addNote(track, channel, k, time, duration/n, volume)
+            time += duration/n
+        file.changeNoteTuning(track,chosennotes)       
+        time -=duration
+    elif re.search("v",x):
+        x=re.split("v",x)
+        i=0
+        while x[0][i]=='.' :
+            i=i+1
+        j=0
+        while x[0][j+ len(x[0]) -1]=='.':
+            j=j-1
+        mean=pitch+(-i -j)*12+notepitch(x[0].strip('.'))
+        for a,b in chosennotes:
+                if a==mean:
+                    meanf=b
+        highf = meanf*1.04
+        lowf = meanf/1.04
+        file.changeNoteTuning(track,[(1,meanf),(2,highf),(3,meanf),(4,lowf)])
+        endtime=time+duration
+        k=0
+        while time < endtime :
+            file.addNote(track, channel,k%4 +1 , time, duration/(4*int(x[1])), volume)
+            time += duration/(4*int(x[1]))
+            k+=1
+        file.changeNoteTuning(track,chosennotes)       
+        time -=duration
     elif x=='x' :
         pass
     else :
@@ -44,6 +109,7 @@ def AddNote(x, file, track, duration, volume, channel, pitch, time):
     time += duration
     return time
 
+# MusicWrite("S R x G M P x D N S. R. G. M. P. D. N. S.." , [], 0, 0, 0, 180, 100, 130, test)
 def MusicWrite(notestring, tuningnotes, instrumentno, channel, track, tempo, volume, Safrequency, MyMIDI ):
     pitch=60
     time=0
@@ -73,13 +139,18 @@ def MusicWrite(notestring, tuningnotes, instrumentno, channel, track, tempo, vol
     'N1':1.8750,
     'N2':1.8984  }
 
+
+    global chosennotes
+    chosennotes=[]
     if len(tuningnotes)!=12 :
         tuningnotes=['S','r1', 'R1', 'g2', 'G1', 'M1', 'm1', 'P', 'd2','D1','n2','N1']
         print("12 notes needed. Default values being used")
 
-    chosennotes=[]
+    
     i=0
     for x in tuningnotes:
+        chosennotes.append((pitch+i+24,tuningratios[x]*Safrequency*4))
+        chosennotes.append((pitch+i-24,tuningratios[x]*Safrequency*0.25))
         chosennotes.append((pitch+i,tuningratios[x]*Safrequency))
         chosennotes.append((pitch+i+12,tuningratios[x]*Safrequency*2))
         chosennotes.append((pitch+i-12,tuningratios[x]*Safrequency*0.5))
@@ -122,49 +193,144 @@ def MusicWrite(notestring, tuningnotes, instrumentno, channel, track, tempo, vol
 
     return
 
-def AddTabla(bols, file, Safrequency, tempo, channel,volume):
+
+def Raag_check(notestring, aaroha=[], avroha=[]):
+    notes=notestring.split(" ")
+    notes.append('E')
+    i=0
+    print(notes)
+    while notes[i+1]!='E':
+        if notes[i]=='S' :
+            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
+                i=i+1
+            if notes[i+1]!=aaroha[0] and notes[i+1]!=avroha[0]:
+                print(i)
+                break
+        elif notes[i]=='R_' :
+            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
+                i=i+1
+            if notes[i+1]!=aaroha[1] and notes[i+1]!=avroha[1]:
+                print(i)
+                break
+        elif notes[i]=='R' :
+            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
+                i=i+1
+            if notes[i+1]!=aaroha[2] and notes[i+1]!=avroha[2]:
+                print(i)
+                break
+        elif notes[i]=='G_' :
+            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
+                i=i+1
+            if notes[i+1]!=aaroha[3] and notes[i+1]!=avroha[3]:
+                print(i)
+                break
+        elif notes[i]=='G' :
+            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
+                i=i+1
+            if notes[i+1]!=aaroha[4] and notes[i+1]!=avroha[4]:
+                print(i)
+                break
+        elif notes[i]=='M' :
+            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
+                i=i+1
+            if notes[i+1]!=aaroha[5] and notes[i+1]!=avroha[5]:
+                print(i)
+                print(aaroha[5])
+                print(notes[i+1])
+                break
+        elif notes[i]=="M'" :
+            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
+                i=i+1
+            if notes[i+1]!=aaroha[6] and notes[i+1]!=avroha[6]:
+                print(i)
+                print("M'")
+                break
+        elif notes[i]=='P' :
+            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
+                i=i+1
+            if notes[i+1]!=aaroha[7] and notes[i+1]!=avroha[7]:
+                print(i)
+                break
+        elif notes[i]=='D_' :
+            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
+                i=i+1
+            if notes[i+1]!=aaroha[8] and notes[i+1]!=avroha[8]:
+                print(i)
+                break
+        elif notes[i]=='D' :
+            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
+                i=i+1
+            if notes[i+1]!=aaroha[9] and notes[i+1]!=avroha[9]:
+                print(i)
+                break
+        elif notes[i]=='N_' :
+            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
+                i=i+1
+            if notes[i+1]!=aaroha[10] and notes[i+1]!=avroha[10]:
+                print(i)
+                break
+        elif notes[i]=='N' :
+            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
+                i=i+1
+            if notes[i+1]!=aaroha[11] and notes[i+1]!=avroha[11]:
+                print(i)
+                print(notes[i+1])
+                print(aaroha[11])
+                print('E')
+                break
+        else:
+            pass
+
+        i=i+1
+
+
+    if notes[i+1]=='E':
+        return True
+    else:
+        return False
+
+def AddTabla(bols, file, Safrequency, tempo, channel,volume, starttrack):
     pitch=60
     time=0
     duration=1
     defaultduration=1
-    for i in range(1,11):
+    for i in range(starttrack,starttrack+10):
         file.addTempo(i, time, tempo)
 
     bols=bols.split(" ")
-    print(bols)
 
 
     for x in bols:
         if x=='Ta':
-            file.addProgramChange(1, channel, time, 116)
-            file.addNote(1, channel, pitch, time, duration, volume)
+            file.addProgramChange(starttrack-1+1, channel, time, 116)
+            file.addNote(starttrack-1+1, channel, pitch, time, duration, volume)
         elif x=='Dha':
-            file.addProgramChange(2, channel, time, 117)
-            file.addNote(2, channel, pitch, time, duration, volume)
+            file.addProgramChange(starttrack-1+2, channel, time, 117)
+            file.addNote(starttrack-1+2, channel, pitch, time, duration, volume)
         elif x=='Tun':
-            file.addProgramChange(3, channel, time, 118)
-            file.addNote(3, channel, pitch, time, duration, volume)
+            file.addProgramChange(starttrack-1+3, channel, time, 118)
+            file.addNote(starttrack-1+3, channel, pitch, time, duration, volume)
         elif x=='Tta':
-            file.addProgramChange(4, channel, time, 119)
-            file.addNote(4, channel, pitch, time, duration, volume)
+            file.addProgramChange(starttrack-1+4, channel, time, 119)
+            file.addNote(starttrack-1+4, channel, pitch, time, duration, volume)
         elif x=='Dhin':
-            file.addProgramChange(5, channel, time, 120)
-            file.addNote(5, channel, pitch, time, duration, volume)
+            file.addProgramChange(starttrack-1+5, channel, time, 120)
+            file.addNote(starttrack-1+5, channel, pitch, time, duration, volume)
         elif x=='Na':
-            file.addProgramChange(6, channel, time, 121)
-            file.addNote(6, channel, pitch, time, duration, volume)
+            file.addProgramChange(starttrack-1+6, channel, time, 121)
+            file.addNote(starttrack-1+6, channel, pitch, time, duration, volume)
         elif x=="Ga" or x=='Ge':
-            file.addProgramChange(7, channel, time, 122)
-            file.addNote(7, channel, pitch, time, duration, volume)
+            file.addProgramChange(starttrack-1+7, channel, time, 122)
+            file.addNote(starttrack-1+7, channel, pitch, time, duration, volume)
         elif x=='Di':
-            file.addProgramChange(8, channel, time, 123)
+            file.addProgramChange(starttrack-1+8, channel, time, 123)
             file.addNote(8, channel, pitch, time, duration, volume)
         elif x=='Ka' or x=='Ke':
-            file.addProgramChange(9, channel, time, 124)
-            file.addNote(9, channel, pitch, time, duration, volume)
+            file.addProgramChange(starttrack-1+9, channel, time, 124)
+            file.addNote(starttrack-1+9, channel, pitch, time, duration, volume)
         elif x=='Tin':
-            file.addProgramChange(10, channel, time, 125)
-            file.addNote(10, channel, pitch, time, duration, volume)
+            file.addProgramChange(starttrack-1+10, channel, time, 125)
+            file.addNote(starttrack-1+10, channel, pitch, time, duration, volume)
         elif x=='x' :
             pass
         else :
@@ -173,95 +339,17 @@ def AddTabla(bols, file, Safrequency, tempo, channel,volume):
     return  
 
 
-def Raag_check(notestring, aaroha=[], avroha=[]):
-    notes=notestring.split(" ")
-    notes.append('EOF')
-    i=0
-    while notes[i]!='EOF':
-        if notes[i]=='S' :
-            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
-                i=i+1
-            if notes[i+1]!=aaroha[0] and notes[i+1]!=avroha[0]:
-                break
-        elif notes[i]=='R_' :
-            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
-                i=i+1
-            if notes[i+1]!=aaroha[1] and notes[i+1]!=avroha[1]:
-                break
-        elif notes[i]=='R' :
-            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
-                i=i+1
-            if notes[i+1]!=aaroha[2] and notes[i+1]!=avroha[2]:
-                break
-        elif notes[i]=='G_' :
-            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
-                i=i+1
-            if notes[i+1]!=aaroha[3] and notes[i+1]!=avroha[3]:
-                break
-        elif notes[i]=='G' :
-            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
-                i=i+1
-            if notes[i+1]!=aaroha[4] and notes[i+1]!=avroha[4]:
-                break
-        elif notes[i]=='M' :
-            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
-                i=i+1
-            if notes[i+1]!=aaroha[5] and notes[i+1]!=avroha[5]:
-                break
-        elif notes[i]=="M'" :
-            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
-                i=i+1
-            if notes[i+1]!=aaroha[6] and notes[i+1]!=avroha[6]:
-                break
-        elif notes[i]=='P' :
-            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
-                i=i+1
-            if notes[i+1]!=aaroha[7] and notes[i+1]!=avroha[7]:
-                break
-        elif notes[i]=='D_' :
-            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
-                i=i+1
-            if notes[i+1]!=aaroha[8] and notes[i+1]!=avroha[8]:
-                break
-        elif notes[i]=='D' :
-            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
-                i=i+1
-            if notes[i+1]!=aaroha[9] and notes[i+1]!=avroha[9]:
-                break
-        elif notes[i]=='N_' :
-            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
-                i=i+1
-            if notes[i+1]!=aaroha[10] and notes[i+1]!=avroha[10]:
-                break
-        elif notes[i]=='N' :
-            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
-                i=i+1
-            if notes[i+1]!=aaroha[11] and notes[i+1]!=avroha[11]:
-                break
-        else:
-            pass
 
-        i=i+1
+test = MIDIFile(numTracks=12,adjust_origin=True)
 
+#AddTabla("Dha Dhin Ti Ga Dha Dha",test,262,200,0,100,1)
 
-    if notes[i+1]=='EOF':
-        return True
-    else:
-        return False
+MusicWrite("Sv3 _ _ _ _ _ S _", [], 40, 0, 0, 180, 100, 260, test)
+#MusicWrite("( R M ) ( P D ) M G / R G S R / M _ G S / R G .N S" , [], 125, 0, 1, 180, 100, 520, test)
 
-
-
-
-
-
-test = MIDIFile(adjust_origin=True)
-
-MusicWrite("( S R_ ) R _ _ G_ G M M' P D_ D N_ N S." , [], 40, 0, 0, 180, 100, 260, test)
+# # print( Raag_check("S R_ R G_ G M M' P D_ D N_ N" , ['R_' , 'R','G_', 'G' , 'M', "M'",'P','D_', 'D' , 'N_', 'N', 'a'],['a', 'S', 'R_', 'R', 'G_', 'G', 'M', "M'", 'P','D_','D','N_']))
 
 with open("testmusic.mid", "wb") as output_file:
     test.writeFile(output_file)
-
-
-
 
 
