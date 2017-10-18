@@ -173,6 +173,87 @@ def AddTabla(bols, file, Safrequency, tempo, channel,volume):
     return  
 
 
+def Raag_check(notestring, aaroha=[], avroha=[]):
+    notes=notestring.split(" ")
+    notes.append('EOF')
+    i=0
+    while notes[i]!='EOF':
+        if notes[i]=='S' :
+            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
+                i=i+1
+            if notes[i+1]!=aaroha[0] and notes[i+1]!=avroha[0]:
+                break
+        elif notes[i]=='R_' :
+            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
+                i=i+1
+            if notes[i+1]!=aaroha[1] and notes[i+1]!=avroha[1]:
+                break
+        elif notes[i]=='R' :
+            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
+                i=i+1
+            if notes[i+1]!=aaroha[2] and notes[i+1]!=avroha[2]:
+                break
+        elif notes[i]=='G_' :
+            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
+                i=i+1
+            if notes[i+1]!=aaroha[3] and notes[i+1]!=avroha[3]:
+                break
+        elif notes[i]=='G' :
+            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
+                i=i+1
+            if notes[i+1]!=aaroha[4] and notes[i+1]!=avroha[4]:
+                break
+        elif notes[i]=='M' :
+            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
+                i=i+1
+            if notes[i+1]!=aaroha[5] and notes[i+1]!=avroha[5]:
+                break
+        elif notes[i]=="M'" :
+            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
+                i=i+1
+            if notes[i+1]!=aaroha[6] and notes[i+1]!=avroha[6]:
+                break
+        elif notes[i]=='P' :
+            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
+                i=i+1
+            if notes[i+1]!=aaroha[7] and notes[i+1]!=avroha[7]:
+                break
+        elif notes[i]=='D_' :
+            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
+                i=i+1
+            if notes[i+1]!=aaroha[8] and notes[i+1]!=avroha[8]:
+                break
+        elif notes[i]=='D' :
+            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
+                i=i+1
+            if notes[i+1]!=aaroha[9] and notes[i+1]!=avroha[9]:
+                break
+        elif notes[i]=='N_' :
+            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
+                i=i+1
+            if notes[i+1]!=aaroha[10] and notes[i+1]!=avroha[10]:
+                break
+        elif notes[i]=='N' :
+            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
+                i=i+1
+            if notes[i+1]!=aaroha[11] and notes[i+1]!=avroha[11]:
+                break
+        else:
+            pass
+
+        i=i+1
+
+
+    if notes[i+1]=='EOF':
+        return True
+    else:
+        return False
+
+
+
+
+
+
 test = MIDIFile(adjust_origin=True)
 
 MusicWrite("( S R_ ) R _ _ G_ G M M' P D_ D N_ N S." , [], 40, 0, 0, 180, 100, 260, test)
@@ -183,4 +264,4 @@ with open("testmusic.mid", "wb") as output_file:
 
 
 
-    
+
