@@ -213,100 +213,84 @@ def MusicWrite(notestring, tuningnotes, instrumentno, channel, track, tempo, vol
     return
 
 
-def Raag_check(notestring, aaroha=[], avroha=[]):
-    notes=notestring.split(" ")
-    notes.append('E')
-    i=0
-    print(notes)
-    while notes[i+1]!='E':
-        if notes[i]=='S' :
-            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
-                i=i+1
-            if notes[i+1]!=aaroha[0] and notes[i+1]!=avroha[0]:
-                print(i)
-                break
-        elif notes[i]=='R_' :
-            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
-                i=i+1
-            if notes[i+1]!=aaroha[1] and notes[i+1]!=avroha[1]:
-                print(i)
-                break
-        elif notes[i]=='R' :
-            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
-                i=i+1
-            if notes[i+1]!=aaroha[2] and notes[i+1]!=avroha[2]:
-                print(i)
-                break
-        elif notes[i]=='G_' :
-            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
-                i=i+1
-            if notes[i+1]!=aaroha[3] and notes[i+1]!=avroha[3]:
-                print(i)
-                break
-        elif notes[i]=='G' :
-            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
-                i=i+1
-            if notes[i+1]!=aaroha[4] and notes[i+1]!=avroha[4]:
-                print(i)
-                break
-        elif notes[i]=='M' :
-            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
-                i=i+1
-            if notes[i+1]!=aaroha[5] and notes[i+1]!=avroha[5]:
-                print(i)
-                print(aaroha[5])
-                print(notes[i+1])
-                break
-        elif notes[i]=="M'" :
-            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
-                i=i+1
-            if notes[i+1]!=aaroha[6] and notes[i+1]!=avroha[6]:
-                print(i)
-                print("M'")
-                break
-        elif notes[i]=='P' :
-            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
-                i=i+1
-            if notes[i+1]!=aaroha[7] and notes[i+1]!=avroha[7]:
-                print(i)
-                break
-        elif notes[i]=='D_' :
-            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
-                i=i+1
-            if notes[i+1]!=aaroha[8] and notes[i+1]!=avroha[8]:
-                print(i)
-                break
-        elif notes[i]=='D' :
-            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
-                i=i+1
-            if notes[i+1]!=aaroha[9] and notes[i+1]!=avroha[9]:
-                print(i)
-                break
-        elif notes[i]=='N_' :
-            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
-                i=i+1
-            if notes[i+1]!=aaroha[10] and notes[i+1]!=avroha[10]:
-                print(i)
-                break
-        elif notes[i]=='N' :
-            while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
-                i=i+1
-            if notes[i+1]!=aaroha[11] and notes[i+1]!=avroha[11]:
-                print(i)
-                print(notes[i+1])
-                print(aaroha[11])
-                print('E')
-                break
-        else:
-            pass
 
+def hash_swara(swar):
+    if swar=='S' :
+        return 0
+    elif swar=='R_' :
+        return 1
+    elif swar=='R' :
+        return 2   
+    elif swar=='G_' :
+        return 3
+    elif swar=='G' :
+        return 4
+    elif swar=='M' :
+        return 5
+    elif swar=="M'" :
+        return 6
+    elif swar=='P' :
+        return 7
+    elif swar=='D_' :
+        return 8
+    elif swar=='D' :
+        return 9
+    elif swar=='N_' :
+        return 10
+    elif swar=='N' :
+        return 11
+    elif swar=="S." :
+        return 12
+    else :
+        pass
+
+
+def Raag_check(notestring, aarohastr, avrohastr):
+
+    arohnotes=aarohastr.split(" ")
+    avrohnotes=avrohastr.split(" ")
+
+    avrohnotes.append('E')
+    arohnotes.append('E')
+
+    aaroha=['a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a']
+    avroha=['a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a']
+
+    j=0
+    while arohnotes[j+1]!='E':
+        aaroha[hash_swara(arohnotes[j])]=arohnotes[j+1]
+        j=j+1
+
+
+    j=0
+    while avrohnotes[j+1]!='E':
+        avroha[hash_swara(avrohnotes[j])]=avrohnotes[j+1]
+        j=j+1
+
+
+    notes=notestring.split(" ")
+    notes.append('E') 
+
+
+    i=0
+    a=0
+    b=0
+
+    while notes[i+1]!='E':
+        while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
+            i=i+1
+        if notes[i+1]=='E':
+            break
+        elif notes[i+1]==aaroha[hash_swara(notes[i])] or notes[i+1]==avroha[hash_swara(notes[i])] :
+            a=a+1
+        else :
+            b=b+1
         i=i+1
 
+    
+        return (100*a)/(a+b)
 
-    if notes[i+1]=='E':
-        return True
-    else:
-        return False
+
 
 def AddTabla(bols, loops, file, Sapitch, tempo, channel,volume, starttrack):
     pitch=Sapitch
@@ -381,7 +365,7 @@ AddTabla("Teen",1, test,60,150,0,255,1)
 #MusicWrite("Sv3 _ _ _ _ _ S _", [], 40, 0, 0, 180, 100, 260, test)
 #MusicWrite("( R M ) ( P D ) M G / R G S R / M _ G S / R G .N S" , [], 40, 0, 1, 150, 100, 520, test)
 
-# # print( Raag_check("S R_ R G_ G M M' P D_ D N_ N" , ['R_' , 'R','G_', 'G' , 'M', "M'",'P','D_', 'D' , 'N_', 'N', 'a'],['a', 'S', 'R_', 'R', 'G_', 'G', 'M', "M'", 'P','D_','D','N_']))
+print( Raag_check("S R_ R G_ G M M' P M' M G M G G_ R G_ R R_ S" ,"S R_ R G_ G M M' P D_ D N_ N S.","S. N N_ D D_ P M' M G G_ R R_ S") )
 
 with open("testmusic.mid", "wb") as output_file:
     test.writeFile(output_file)
