@@ -2,6 +2,23 @@ from midiutil import MIDIFile
 import re
 chosennotes=[]
 
+def taals(x):
+    if x=="Teen":
+        return "Dha Dhin Dhin Dha Dha Dhin Dhin Dha Dha Tin Tin Ta Ta Dhin Dhin Dha"
+    elif x=="Dadra":
+        return "Dha Dhin Na Dha Tin Na"
+    elif x=="Rupak":
+        return "Tin Tin Na Dhin Na Dhin Na"
+    elif x=="Dhamar":
+        return "Ka Dhin Tta Dhin Tta Dha x Ga Ti Tta Ti Tta Ta x"
+    elif x=="Jhap":
+        return "Dhi Na Dhi Dhi Na Ti Na Dhi Dhi Na"
+    elif x=="Ek":
+        return "Dhin Dhin ( Dha Ge ) ( Ti Di Ke Tta ) Tun Na Ka Ta ( Dha Ge ) ( Ti Di Ke Tta ) Dhin Na"    
+    else:
+        return x
+
+
 def notepitch(x):
     if x=='S':
         return 0
@@ -34,14 +51,6 @@ def AddNote(x, file, track, duration, volume, channel, pitch, time):
     global chosennotes
     n=19
     if notepitch(x)!=-1:
-        i=0
-        while x[i]=='.' :
-            i=i+1
-        j=0
-        while x[j+ len(x) -1]=='.':
-            j=j-1
-        x=x.strip('.')
-        pitch += (-i -j)*12
         file.addNote(track, channel, pitch + notepitch(x), time, duration, volume)
     elif re.search("\^",x):
         x=re.split("\^",x)
@@ -101,6 +110,16 @@ def AddNote(x, file, track, duration, volume, channel, pitch, time):
             k+=1
         file.changeNoteTuning(track,chosennotes)       
         time -=duration
+    elif re.search("\.",x):
+        i=0
+        while x[i]=='.' :
+            i=i+1
+        j=0
+        while x[j+ len(x) -1]=='.':
+            j=j-1
+        x=x.strip('.')
+        pitch += (-i -j)*12
+        file.addNote(track, channel, pitch + notepitch(x), time, duration, volume)        
     elif x=='x' :
         pass
     else :
@@ -289,63 +308,78 @@ def Raag_check(notestring, aaroha=[], avroha=[]):
     else:
         return False
 
-def AddTabla(bols, file, Safrequency, tempo, channel,volume, starttrack):
-    pitch=60
+def AddTabla(bols, loops, file, Sapitch, tempo, channel,volume, starttrack):
+    pitch=Sapitch
     time=0
     duration=1
     defaultduration=1
+    bols=taals(bols)
     for i in range(starttrack,starttrack+10):
         file.addTempo(i, time, tempo)
 
     bols=bols.split(" ")
+    bols.append('EOF')
+    for index in range(1,loops+1):
+        i=0
+        while bols[i]!='EOF':
+            x=bols[i]
+            if x=='(' :
+                j=i
+                while bols[j]!=')' :
+                    j=j+1
+                duration = duration /(j-i-1)
+            elif x==')' :
+                duration = defaultduration
+            elif x=='Ti':
+                file.addProgramChange(starttrack, channel, time, 116)
+                file.addNote(starttrack, channel, pitch, time, duration, volume)
+            if x=='Ta':
+                file.addProgramChange(starttrack+1, channel, time, 115)
+                file.addNote(starttrack+1, channel, pitch, time + duration/5, duration, volume-10)
+            elif x=='Dha':
+                file.addProgramChange(starttrack+2, channel, time, 117)
+                file.addNote(starttrack+2, channel, pitch, time, duration, volume)
+            elif x=='Tun':
+                file.addProgramChange(starttrack+3, channel, time, 118)
+                file.addNote(starttrack+3, channel, pitch, time, duration, volume)
+            elif x=='Tta':
+                file.addProgramChange(starttrack+4, channel, time, 119)
+                file.addNote(starttrack+4, channel, pitch, time, duration, volume)
+            elif x=='Dhin' or x=='Dhi':
+                file.addProgramChange(starttrack+5, channel, time, 120)
+                file.addNote(starttrack+5, channel, pitch, time, duration, volume)
+            elif x=='Na':
+                file.addProgramChange(starttrack+6, channel, time, 121)
+                file.addNote(starttrack+6, channel, pitch, time, duration, volume)
+            elif x=="Ga" or x=='Ge':
+                file.addProgramChange(starttrack+7, channel, time, 122)
+                file.addNote(starttrack+7, channel, pitch, time, duration, volume)
+            elif x=='Di':
+                file.addProgramChange(starttrack+8, channel, time, 123)
+                file.addNote(starttrack+8, channel, pitch, time, duration, volume)
+            elif x=='Ka' or x=='Ke':
+                file.addProgramChange(starttrack+9, channel, time, 124)
+                file.addNote(starttrack+9, channel, pitch, time, duration, volume)
+            elif x=='Tin':
+                file.addProgramChange(starttrack+10, channel, time, 125)
+                file.addNote(starttrack+10, channel, pitch, time, duration, volume)
 
-
-    for x in bols:
-        if x=='Ta':
-            file.addProgramChange(starttrack-1+1, channel, time, 116)
-            file.addNote(starttrack-1+1, channel, pitch, time, duration, volume)
-        elif x=='Dha':
-            file.addProgramChange(starttrack-1+2, channel, time, 117)
-            file.addNote(starttrack-1+2, channel, pitch, time, duration, volume)
-        elif x=='Tun':
-            file.addProgramChange(starttrack-1+3, channel, time, 118)
-            file.addNote(starttrack-1+3, channel, pitch, time, duration, volume)
-        elif x=='Tta':
-            file.addProgramChange(starttrack-1+4, channel, time, 119)
-            file.addNote(starttrack-1+4, channel, pitch, time, duration, volume)
-        elif x=='Dhin':
-            file.addProgramChange(starttrack-1+5, channel, time, 120)
-            file.addNote(starttrack-1+5, channel, pitch, time, duration, volume)
-        elif x=='Na':
-            file.addProgramChange(starttrack-1+6, channel, time, 121)
-            file.addNote(starttrack-1+6, channel, pitch, time, duration, volume)
-        elif x=="Ga" or x=='Ge':
-            file.addProgramChange(starttrack-1+7, channel, time, 122)
-            file.addNote(starttrack-1+7, channel, pitch, time, duration, volume)
-        elif x=='Di':
-            file.addProgramChange(starttrack-1+8, channel, time, 123)
-            file.addNote(8, channel, pitch, time, duration, volume)
-        elif x=='Ka' or x=='Ke':
-            file.addProgramChange(starttrack-1+9, channel, time, 124)
-            file.addNote(starttrack-1+9, channel, pitch, time, duration, volume)
-        elif x=='Tin':
-            file.addProgramChange(starttrack-1+10, channel, time, 125)
-            file.addNote(starttrack-1+10, channel, pitch, time, duration, volume)
-        elif x=='x' :
-            pass
-        else :
-            time -= duration
-        time += duration
+            elif x=='x' :
+                pass
+            else :
+                time -= duration
+            time += duration
+            i+=1
     return  
 
 
 
-test = MIDIFile(numTracks=12,adjust_origin=True)
+test = MIDIFile(numTracks=13,adjust_origin=True)
 
-#AddTabla("Dha Dhin Ti Ga Dha Dha",test,262,200,0,100,1)
+AddTabla("Teen",1, test,60,150,0,255,1)
 
-MusicWrite("Sv3 _ _ _ _ _ S _", [], 40, 0, 0, 180, 100, 260, test)
-#MusicWrite("( R M ) ( P D ) M G / R G S R / M _ G S / R G .N S" , [], 125, 0, 1, 180, 100, 520, test)
+#MusicWrite("Sv3 _ _ _ _ _ S _", [], 40, 0, 0, 180, 100, 260, test)
+#MusicWrite("( R M ) ( P D ) M G / R G S R / M _ G S / R G .N S" , [], 40, 0, 1, 150, 100, 520, test)
 
 # # print( Raag_check("S R_ R G_ G M M' P D_ D N_ N" , ['R_' , 'R','G_', 'G' , 'M', "M'",'P','D_', 'D' , 'N_', 'N', 'a'],['a', 'S', 'R_', 'R', 'G_', 'G', 'M', "M'", 'P','D_','D','N_']))
 
