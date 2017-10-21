@@ -258,15 +258,20 @@ def Raag_check(notestring, aarohastr, avrohastr):
 
     j=0
     while arohnotes[j+1]!='E':
-        aaroha[hash_swara(arohnotes[j])]=arohnotes[j+1]
+        if aaroha[hash_swara(arohnotes[j])]=='a':
+            aaroha[hash_swara(arohnotes[j])]=arohnotes[j+1]
+        else :
+            aaroha[hash_swara(arohnotes[j])]=aaroha[hash_swara(arohnotes[j])]+" "+arohnotes[j+1]
         j=j+1
 
 
     j=0
     while avrohnotes[j+1]!='E':
-        avroha[hash_swara(avrohnotes[j])]=avrohnotes[j+1]
+        if avroha[hash_swara(avrohnotes[j])]=='a':
+            avroha[hash_swara(avrohnotes[j])]=avrohnotes[j+1]
+        else :
+            avroha[hash_swara(avrohnotes[j])]=avroha[hash_swara(avrohnotes[j])]+" "+avrohnotes[j+1]
         j=j+1
-
 
     notes=notestring.split(" ")
     notes.append('E') 
@@ -281,15 +286,35 @@ def Raag_check(notestring, aarohastr, avrohastr):
             i=i+1
         if notes[i+1]=='E':
             break
-        elif notes[i+1]==aaroha[hash_swara(notes[i])] or notes[i+1]==avroha[hash_swara(notes[i])] :
+
+        c=0
+        check=0
+        temp_aaroha=aaroha[hash_swara(notes[i])].split(" ")
+        temp_avroha=avroha[hash_swara(notes[i])].split(" ")
+
+        temp_aaroha.append('E')
+        temp_avroha.append('E')
+
+        while temp_aaroha[c]!='E' :
+            if notes[i+1]==temp_aaroha[c] :
+                check=1
+                break
+            c=c+1
+
+        c=0
+        while temp_avroha[c]!='E' :
+            if notes[i+1]==temp_avroha[c] :
+                check=1
+                break
+            c=c+1
+
+        if check==1 :
             a=a+1
         else :
             b=b+1
         i=i+1
 
-    
-        return (100*a)/(a+b)
-
+    return (100*a)/(a+b)
 
 
 def AddTabla(bols, loops, file, Sapitch, tempo, channel,volume, starttrack):
@@ -365,7 +390,7 @@ AddTabla("Teen",1, test,60,150,0,255,1)
 #MusicWrite("Sv3 _ _ _ _ _ S _", [], 40, 0, 0, 180, 100, 260, test)
 #MusicWrite("( R M ) ( P D ) M G / R G S R / M _ G S / R G .N S" , [], 40, 0, 1, 150, 100, 520, test)
 
-print( Raag_check("S R_ R G_ G M M' P M' M G M G G_ R G_ R R_ S" ,"S R_ R G_ G M M' P D_ D N_ N S.","S. N N_ D D_ P M' M G G_ R R_ S") )
+print( Raag_check("S R_ G_ G_ G M M' G P D_ D D_ P D M' M G G_ R" ,"S R_ R G_ G M M' G P D_ D N_ N S.","S. N N_ D D_ P D M' M G G_ R R_ S") )
 
 with open("testmusic.mid", "wb") as output_file:
     test.writeFile(output_file)
