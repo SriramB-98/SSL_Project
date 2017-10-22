@@ -129,7 +129,8 @@ def AddNote(x, file, track, duration, volume, channel, pitch, time):
     return time
 
 # MusicWrite("S R x G M P x D N S. R. G. M. P. D. N. S.." , [], 0, 0, 0, 180, 100, 130, test)
-def MusicWrite(notestring, tuningnotes, instrumentno, channel, track, tempo, volume, Safrequency, MyMIDI ):
+def MusicWrite(notestring, tuningnotes, instrumentno, channel, track, tempo, volume, Safrequency, filename ):
+    MyMIDI = MIDIFile(numTracks=2,adjust_origin=True)
     pitch=60
     time=0
     duration=1
@@ -209,6 +210,9 @@ def MusicWrite(notestring, tuningnotes, instrumentno, channel, track, tempo, vol
 
     for x,d in nandd :
         time=AddNote(x, MyMIDI, track, d, volume, channel, pitch, time)
+
+    with open(filename, "wb") as output_file:
+        MyMIDI.writeFile(output_file)
 
     return
 
@@ -316,7 +320,8 @@ def Raag_check(notestring, aarohastr, avrohastr):
     return (100*a)/(a+b)
 
 
-def AddTabla(bols, loops, file, Sapitch, tempo, channel,volume, starttrack):
+def AddTabla(bols, loops, filename, Sapitch, tempo, channel,volume, starttrack):
+    file = MIDIFile(numTracks=13,adjust_origin=True)
     pitch=Sapitch
     time=0
     duration=1
@@ -378,20 +383,20 @@ def AddTabla(bols, loops, file, Sapitch, tempo, channel,volume, starttrack):
                 time -= duration
             time += duration
             i+=1
+
+    with open(filename,"wb") as output_file:
+        file.writeFile(output_file)
     return  
 
 
 
-test = MIDIFile(numTracks=13,adjust_origin=True)
 
-AddTabla("Teen",1, test,60,150,0,255,1)
+AddTabla("Teen",1,"Tabla.mid",60,150,0,255,1)
 
-#MusicWrite("Sv3 _ _ _ _ _ S _", [], 40, 0, 0, 180, 100, 260, test)
+MusicWrite("( P M ) P G _ M N^D D _ _ N D S. N D _ P", [], 40, 0, 0, 180, 100, 260, "Violin.mid")
 #MusicWrite("( R M ) ( P D ) M G / R G S R / M _ G S / R G .N S" , [], 40, 0, 1, 150, 100, 520, test)
 
-print( Raag_check("S R_ G_ G_ G M M' G P D_ D D_ P D M' M G G_ R" ,"S R_ R G_ G M M' G P D_ D N_ N S.","S. N N_ D D_ P D M' M G G_ R R_ S") )
+#print( Raag_check("S R_ G_ G_ G M M' G P D_ D D_ P D M' M G G_ R" ,"S R_ R G_ G M M' G P D_ D N_ N S.","S. N N_ D D_ P D M' M G G_ R R_ S") )
 
-with open("testmusic.mid", "wb") as output_file:
-    test.writeFile(output_file)
 
 
