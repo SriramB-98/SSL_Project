@@ -9,9 +9,9 @@ def callb(key):
     ti1 = str(ti1) #converting float value to string
     ti2 = ti1[0:5] #cutting the seconds ( time ) , without it , it will print like 0.233446546
     #print("The key",key,"Pressed For",ti2,'seconds')
-    letter.append(key)
+    letter.append(str(key)[2])
     duration.append(ti2)
-    print(key)
+    print(str(key)[2])
     print(ti2)
     return False #stop detecting more key-releases
 
