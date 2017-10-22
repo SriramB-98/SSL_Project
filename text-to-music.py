@@ -416,7 +416,7 @@ def Raag_result(ntestring) :
             Musicnotes2.append("E")
             i=0
             while Musicnotes2[i]!="E":
-                B=Raag_check(Musicnotes2[i],string[0],string[1])
+                B=Raag_check(Musicnotes2[i],string[1],string[2])
                 A[0]=A[0]+B[0]
                 A[1]=A[1]+B[1]
                 i=i+1

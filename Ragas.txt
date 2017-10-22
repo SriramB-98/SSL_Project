@@ -50,7 +50,7 @@ Kedar  S M P D P N D S.  S. N D P M' P D P M R S
 Khamaj  S G M P D N S.  S. N_ D P M G R S
 Malkauns  S G_ M D_ N_ S.  S. N_ D_ M G_ S
 Malgunji  S R G M D N_ S.  S. N_ D P M G R G M G_ R S
-Maru Bihag S G M' P N S.  S. N D P M' G M' G R S
+Maru Bihag  S G M' P N S.  S. N D P M' G M' G R S
 Narayani  S R M P D S.  S. N_ D P M R S
 Parameshwari  S R_ G_ M D N_ S.  S. N_ D M G_ R_ S
 Patdeep  S G_ M P N S.  S. N D P M G_ R S
@@ -61,10 +61,8 @@ Shobawari  S R M P D_ S.  S. D_ P M R S
 Shree  S R_ M' P N S.  S. N D_ P M P D_ M G R_ S
 Shuddha Kalyan  S R G P D S.  S. N D P M' G R S
 Sindhura  S R M P D S.  S. N_ D P M G_ R M G_ R S
-Todi  S R_ G_ M' P D_ N S. S. N D_ P M' G_ R_ S
+Todi  S R_ G_ M' P D_ N S.  S. N D_ P M' G_ R_ S
 Tilang  S G M P N S.  S. N_ P M G S
 Vachaspati  S G M' P N_ S.  S. N_ D P M' G R S
 Vrindavani Sarang  S R M P N S.  S. N_ P M R S
 Yaman  S R G M' P D N S.  S. N D P M' G R S
-
-
