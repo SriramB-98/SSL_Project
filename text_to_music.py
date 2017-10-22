@@ -218,35 +218,50 @@ def MusicWrite(notestring, tuningnotes, instrumentno, channel, track, tempo, vol
 
 
 
-def hash_swara(swar):
-    if swar=='S' :
-        return 0
-    elif swar=='R_' :
-        return 1
-    elif swar=='R' :
-        return 2   
-    elif swar=='G_' :
-        return 3
-    elif swar=='G' :
-        return 4
-    elif swar=='M' :
-        return 5
-    elif swar=="M'" :
-        return 6
-    elif swar=='P' :
-        return 7
-    elif swar=='D_' :
-        return 8
-    elif swar=='D' :
-        return 9
-    elif swar=='N_' :
-        return 10
-    elif swar=='N' :
-        return 11
-    elif swar=="S." :
-        return 12
+def hash_swara(swar1):
+
+    swar_new=swar1.split(".")
+    a=0
+    swar_new.append('E')
+    swar='a'
+    if swar_new[0]=='.' :
+        a=0
+        swar=swar_new[1]
     else :
-        pass
+        if swar_new[1]=='.' :
+            swar=swar_new[0]
+            a=24
+        else :
+            swar=swar_new[0]
+            a=12
+
+    if swar=='S' :
+        return 0+a
+    elif swar=='R_' :
+        return 1+a
+    elif swar=='R' :
+        return 2+a   
+    elif swar=='G_' :
+        return 3+a
+    elif swar=='G' :
+        return 4+a
+    elif swar=='M' :
+        return 5+a
+    elif swar=="M'" :
+        return 6+a
+    elif swar=='P' :
+        return 7+a
+    elif swar=='D_' :
+        return 8+a
+    elif swar=='D' :
+        return 9+a
+    elif swar=='N_' :
+        return 10+a
+    elif swar=='N' :
+        return 11+a
+    else :
+        return -1
+
 
 def Raag_check(notestring, aarohastr, avrohastr):
 
@@ -256,24 +271,84 @@ def Raag_check(notestring, aarohastr, avrohastr):
     avrohnotes.append('E')
     arohnotes.append('E')
 
-    aaroha=['a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a']
-    avroha=['a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a']
+    aaroha=['a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a']
+    avroha=['a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a']
 
     j=0
     while arohnotes[j+1]!='E':
-        if aaroha[hash_swara(arohnotes[j])]=='a':
-            aaroha[hash_swara(arohnotes[j])]=arohnotes[j+1]
+        s1=arohnotes[j]
+        s2=arohnotes[j+1]
+
+        if hash_swara(s1)!=-1 :
+            if aaroha[hash_swara(s1)]=='a':
+                aaroha[hash_swara(s1)]=s2
+            else :
+                aaroha[hash_swara(s1)]=aaroha[hash_swara(s1)]+" "+s2
+        
+        s3=s1+"."
+        s4=s2+"."
+
+        if hash_swara(s3)!=-1 :
+            if aaroha[hash_swara(s3)]=='a':
+                aaroha[hash_swara(s3)]=s4
+            else :
+                aaroha[hash_swara(s3)]=aaroha[hash_swara(s3)]+" "+s4
+
+        if s1=='S.' :
+            s1='S'
         else :
-            aaroha[hash_swara(arohnotes[j])]=aaroha[hash_swara(arohnotes[j])]+" "+arohnotes[j+1]
+            s1="."+s1
+
+        if s2=='S.' :
+            s2='S'
+        else :
+            s2="."+s2
+
+        if hash_swara(s1)!=-1 :
+            if aaroha[hash_swara(s1)]=='a':
+                aaroha[hash_swara(s1)]=s2
+            else :
+                aaroha[hash_swara(s1)]=aaroha[hash_swara(s1)]+" "+s2
+        
         j=j+1
 
 
     j=0
     while avrohnotes[j+1]!='E':
-        if avroha[hash_swara(avrohnotes[j])]=='a':
-            avroha[hash_swara(avrohnotes[j])]=avrohnotes[j+1]
+        s1=avrohnotes[j]
+        s2=avrohnotes[j+1]
+
+        if hash_swara(s1)!=-1 :
+            if avroha[hash_swara(s1)]=='a':
+                avroha[hash_swara(s1)]=s2
+            else :
+                avroha[hash_swara(s1)]=avroha[hash_swara(s1)]+" "+s2
+        
+        s3=s1+"."
+        s4=s2+"."
+
+        if hash_swara(s3)!=-1 :
+            if avroha[hash_swara(s3)]=='a':
+                avroha[hash_swara(s3)]=s4
+            else :
+                avroha[hash_swara(s3)]=avroha[hash_swara(s3)]+" "+s4
+
+        if s1=='S.' :
+            s1='S'
         else :
-            avroha[hash_swara(avrohnotes[j])]=avroha[hash_swara(avrohnotes[j])]+" "+avrohnotes[j+1]
+            s1="."+s1
+
+        if s2=='S.' :
+            s2='S'
+        else :
+            s2="."+s2
+
+        if hash_swara(s1)!=-1 :
+            if avroha[hash_swara(s1)]=='a':
+                avroha[hash_swara(s1)]=s2
+            else :
+                avroha[hash_swara(s1)]=avroha[hash_swara(s1)]+" "+s2
+        
         j=j+1
 
     notes=notestring.split(" ")
@@ -292,21 +367,24 @@ def Raag_check(notestring, aarohastr, avrohastr):
 
         c=0
         check=0
-        temp_aaroha=aaroha[hash_swara(notes[i])].split(" ")
-        temp_avroha=avroha[hash_swara(notes[i])].split(" ")
+        notes1=notes[i].split('v')
+        notes2=notes[i+1].split('v')
+
+        temp_aaroha=aaroha[hash_swara(notes1[0])].split(" ")
+        temp_avroha=avroha[hash_swara(notes1[0])].split(" ")
 
         temp_aaroha.append('E')
         temp_avroha.append('E')
 
         while temp_aaroha[c]!='E' :
-            if notes[i+1]==temp_aaroha[c] :
+            if notes2[0]==temp_aaroha[c] :
                 check=1
                 break
             c=c+1
 
         c=0
         while temp_avroha[c]!='E' :
-            if notes[i+1]==temp_avroha[c] :
+            if notes2[0]==temp_avroha[c] :
                 check=1
                 break
             c=c+1
@@ -315,10 +393,41 @@ def Raag_check(notestring, aarohastr, avrohastr):
             a=a+1
         else :
             b=b+1
+        
         i=i+1
 
-    return (100*a)/(a+b)
+    return [a,b]
 
+
+def Raag_result(ntestring) :
+    
+    inputfile = open('Ragas.txt')
+
+    Result=[]
+    for line in inputfile:
+        string=re.split(r'\s{2,}', line)
+
+        Musicnotes=ntestring.split(",") 
+        Musicnotes.append("E")
+        j=0
+        A=[0,0]
+        while Musicnotes[j]!="E" :
+            Musicnotes2=Musicnotes[j].split('^')
+            Musicnotes2.append("E")
+            i=0
+            while Musicnotes2[i]!="E":
+                B=Raag_check(Musicnotes2[i],string[0],string[1])
+                A[0]=A[0]+B[0]
+                A[1]=A[1]+B[1]
+                i=i+1
+
+            j=j+1
+        
+        Result.append(100*A[0]/A[1])
+
+    return Result
+
+        
 
 def AddTabla(bols, loops, filename, Sapitch, tempo, channel,volume, starttrack):
     file = MIDIFile(numTracks=13,adjust_origin=True)
@@ -396,7 +505,7 @@ AddTabla("Teen",1,"Tabla.mid",60,150,0,255,1)
 MusicWrite("( P M ) P G _ M N^D D _ _ N D S. N D _ P", [], 40, 0, 0, 180, 100, 260, "Violin.mid")
 #MusicWrite("( R M ) ( P D ) M G / R G S R / M _ G S / R G .N S" , [], 40, 0, 1, 150, 100, 520, test)
 
-#print( Raag_check("S R_ G_ G_ G M M' G P D_ D D_ P D M' M G G_ R" ,"S R_ R G_ G M M' G P D_ D N_ N S.","S. N N_ D D_ P D M' M G G_ R R_ S") )
+print(Raag_result("S R_ G_ G_ G M M' G P D_ D D_ P D M' M G G_ R"))
 
 
 
