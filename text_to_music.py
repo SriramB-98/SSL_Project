@@ -497,7 +497,105 @@ def AddTabla(bols, loops, filename, Sapitch, tempo, channel,volume, starttrack):
         file.writeFile(output_file)
     return  
 
+f= {'q': 'S',
+    'w':'R_',
+    'e':'R',
+    'r':'G_',
+    't':'G',
+    'y':'M',
+    'u':"M'",
+    'i':'P',
+    'o':'D_',
+    'p':'D',
+    '[':'N_',
+    ']':'N',
+    '1': 'S.',
+    '2':'R_.',
+    '3':'R.',
+    '4':'G_.',
+    '5':'G.',
+    '6':'M.',
+    '7':"M'.",
+    '8':'P.',
+    '9':'D_.',
+    '0':'D.',
+    '-':'N_.',
+    '=':'N.',
+    'Q':'.S',
+    'W':'.R_',
+    'E':'.R',
+    'R':'.G_',
+    'T':'.G',
+    'Y':".M",
+    'U':".M'",
+    'I':'.P',
+    'O':'.D_',
+    'P':'.D',
+    '{':'.N_',
+    '}':'.N'
+    }
 
+
+def keyboardMusicWrite(nandd, tuningnotes, instrumentno, channel, track, volume, Safrequency, filename ):
+    MyMIDI = MIDIFile(numTracks=2,adjust_origin=True)
+    pitch=60
+    time=0
+    duration=1
+    defaultduration=1
+    tempo=60000
+    tuningratios = {
+    'S':1,
+    'r1' :1.0535,
+    'r2':1.0666,
+    'R1':1.1111,
+    'R2':1.1250,
+    'g1':1.1851,
+    'g2':1.2000,
+    'G1':1.2500,
+    'G2':1.2626,
+    'M1':1.3333,
+    'M2':1.3500,
+    'm1':1.4062,
+    'm2':1.4238,
+    'P':1.5000,
+    'd1':1.5802,
+    'd2':1.6000,
+    'D1':1.6666,
+    'D2':1.6875,
+    'n1':1.7777,
+    'n2':1.8000,
+    'N1':1.8750,
+    'N2':1.8984  }
+
+    global chosennotes
+    chosennotes=[]
+    if len(tuningnotes)!=12 :
+        tuningnotes=['S','r1', 'R1', 'g2', 'G1', 'M1', 'm1', 'P', 'd2','D1','n2','N1']
+        print("12 notes needed. Default values being used")
+
+    
+    i=0
+    for x in tuningnotes:
+        chosennotes.append((pitch+i+24,tuningratios[x]*Safrequency*4))
+        chosennotes.append((pitch+i-24,tuningratios[x]*Safrequency*0.25))
+        chosennotes.append((pitch+i,tuningratios[x]*Safrequency))
+        chosennotes.append((pitch+i+12,tuningratios[x]*Safrequency*2))
+        chosennotes.append((pitch+i-12,tuningratios[x]*Safrequency*0.5))
+        i = i+1
+
+    MyMIDI.changeNoteTuning(track, chosennotes)
+    MyMIDI.addTempo(track, time, tempo)
+    MyMIDI.addProgramChange(track, channel, time, instrumentno)
+
+
+
+    for x,d in nandd :
+        time=AddNote(f[x], MyMIDI, track, d*1000, volume, channel, pitch, time)
+
+    with open(filename, "wb") as output_file:
+        MyMIDI.writeFile(output_file)
+
+    return
 
 
 AddTabla("Teen",1,"Tabla.mid",60,150,0,255,1)
