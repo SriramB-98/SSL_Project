@@ -431,7 +431,8 @@ def Raag_result(ntestring, percentage) :
             Result.append(string[0])
             Result.append((100*A[0])/(A[0]+A[1]))
 
-    Result.append("E")
+    #print(Result)
+    #Result.append("E")
     return Result
 
         
@@ -605,11 +606,10 @@ def keyboardMusicWrite(nandd, tuningnotes, instrumentno, channel, track, volume,
     return
 
 
-#AddTabla("Teen",1,"Tabla.mid",60,150,0,255,1)
+AddTabla("Teen",1,"Tabla.mid",60,150,0,255,1)
 
 MusicWrite("( P M ) P G _ M N^D D _ _ N D S. N D _ P", [], 40, 0, 0, 180, 100, 260, "Violin.mid")
 #MusicWrite("( R M ) ( P D ) M G / R G S R / M _ G S / R G .N S" , [], 40, 0, 1, 150, 100, 520, test)
-
 #MusicWrite("S R M P D P M R , M P D S.v3", [], 0, 0, 1, 150, 100, 130, "test.mid")
 
 inputfile = open('Ragas.txt')
@@ -617,9 +617,6 @@ inputfile = open('Ragas.txt')
 ni1=0
 Rwer=Raag_result("S R M P D P M R , M P D S.v3",60)
 
-while Rwer[ni1]!='E' :
-        print(Rwer[ni1])
-        ni1=ni1+1
-
-
-
+# while Rwer[ni1]!='E' :
+#     print(Rwer[ni1])
+#     ni1=ni1+1
