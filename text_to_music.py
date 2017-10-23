@@ -399,7 +399,7 @@ def Raag_check(notestring, aarohastr, avrohastr):
     return [a,b]
 
 
-def Raag_result(ntestring) :
+def Raag_result(ntestring, percentage) :
 
     inputfile = open('Ragas.txt')
 
@@ -427,9 +427,11 @@ def Raag_result(ntestring) :
             A[0]=1
             A[1]=0
 
+        if percentage<=((100*A[0])/(A[0]+A[1])) :
+            Result.append(string[0])
+            Result.append((100*A[0])/(A[0]+A[1]))
 
-        Result.append((100*A[0])/(A[0]+A[1]))
-
+    Result.append("E")
     return Result
 
         
@@ -608,16 +610,14 @@ def keyboardMusicWrite(nandd, tuningnotes, instrumentno, channel, track, volume,
 MusicWrite("( P M ) P G _ M N^D D _ _ N D S. N D _ P", [], 40, 0, 0, 180, 100, 260, "Violin.mid")
 #MusicWrite("( R M ) ( P D ) M G / R G S R / M _ G S / R G .N S" , [], 40, 0, 1, 150, 100, 520, test)
 
-MusicWrite("S R M P D P M R , M P D S.v3", [], 0, 0, 1, 150, 100, 130, "test.mid")
+#MusicWrite("S R M P D P M R , M P D S.v3", [], 0, 0, 1, 150, 100, 130, "test.mid")
 
 inputfile = open('Ragas.txt')
 
 ni1=0
-Rwer=Raag_result("S.v3")
+Rwer=Raag_result("S R M P D P M R , M P D S.v3",60)
 
-for line in inputfile:
-        string=re.split(r'\s{2,}', line)
-        print(string[0])
+while Rwer[ni1]!='E' :
         print(Rwer[ni1])
         ni1=ni1+1
 
