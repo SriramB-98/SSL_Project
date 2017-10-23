@@ -1,8 +1,8 @@
 from pynput import keyboard 
 import time
+import sys
 
 letter = []
-duration = []
 end = 'o'
 
 def callb(key):
@@ -13,10 +13,14 @@ def callb(key):
 	#print("The key",key,"Pressed For",ti2,'seconds')
 	end = str(key)[2]
 	if end != 'x':
-		letter.append(str(key)[2])
-		duration.append(ti2)
-	#print(str(key)[2])
-	#print(ti2)
+		letter.append((str(key)[2] , ti2))
+		# letter.append(str(key)[2])
+		# duration.append(ti2)
+		# print(str(key)[2])
+		# print(ti2)
+	if end == 'x':
+		print(letter)
+		sys.exit()
 	return False #stop detecting more key-releases
 
 def callb1(key): #what to do on key-press
@@ -28,11 +32,11 @@ while True:
     		listener1.join()
 
 	t = time.time()
-	if end == 'x':
-		break
+	# if end == 'x':
+	# 	break
 
 	with keyboard.Listener(on_release = callb) as listener: #setting code for listening key-release
     		listener.join()
 
 print(letter)
-print(duration)
+sys.exit()
