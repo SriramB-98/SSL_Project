@@ -407,7 +407,7 @@ def Raag_result(ntestring) :
     for line in inputfile:
         string=re.split(r'\s{2,}', line)
 
-        Musicnotes=ntestring.split(",")	
+        Musicnotes=ntestring.split(" , ")	
         Musicnotes.append("E")
         j=0
         A=[0,0]
@@ -422,8 +422,13 @@ def Raag_result(ntestring) :
                 i=i+1
 
             j=j+1
-        
-        Result.append(100*A[0]/A[1])
+
+        if A[0]==0 and A[1]==0 :
+            A[0]=1
+            A[1]=0
+
+
+        Result.append((100*A[0])/(A[0]+A[1]))
 
     return Result
 
@@ -500,10 +505,22 @@ def AddTabla(bols, loops, filename, Sapitch, tempo, channel,volume, starttrack):
 
 
 
-AddTabla("Teen",1,"Tabla.mid",60,150,0,255,1)
+#AddTabla("Teen",1,"Tabla.mid",60,150,0,255,1)
 
-MusicWrite("( P M ) P G _ M N^D D _ _ N D S. N D _ P", [], 40, 0, 0, 180, 100, 260, "Violin.mid")
+#MusicWrite("( P M ) P G _ M N^D D _ _ N D S. N D _ P", [], 40, 0, 0, 180, 100, 260, "Violin.mid")
 #MusicWrite("( R M ) ( P D ) M G / R G S R / M _ G S / R G .N S" , [], 40, 0, 1, 150, 100, 520, test)
 
-print(Raag_result("S R_ G_ G_ G M M' G P D_ D D_ P D M' M G G_ R"))
+MusicWrite("S R M P D P M R , M P D S.v3", [], 0, 0, 1, 150, 100, 130, "test.mid")
+
+inputfile = open('Ragas.txt')
+
+ni1=0
+Rwer=Raag_result("S.v3")
+
+for line in inputfile:
+        string=re.split(r'\s{2,}', line)
+        print(string[0])
+        print(Rwer[ni1])
+        ni1=ni1+1
+
 
