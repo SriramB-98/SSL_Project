@@ -8,10 +8,13 @@ from tkinter import ttk
 from tkinter.filedialog import askopenfilename
 
 L = []
+Full = []
 
 def set():
 	global L
+	global Full
 	L = text_to_music.Raag_result(Area.get("1.0" , "end-1c") , 80)
+	Full = text_to_music.Raag_result(Area.get("1.0" , "end-1c") , 0)
 	#print(L)
 	return
 
@@ -20,7 +23,8 @@ def display():
 	m.title("Possible List of Ragas")
 	m.geometry('300x300+100+100')
 	global L
-	print(len(L))
+	global Full
+	print(Full)
 	if len(L) == 0:
 		mlabel = Label(m , text = "No particular Raga is strongly followed").pack()
 	else:
@@ -30,7 +34,7 @@ def display():
 	m.mainloop()
 
 def fileop():
-	filename = askopenfilename(initialdir = "/",title = "Select file")
+	filename = askopenfilename(title = "Select file")
 	file2 = open(filename,"r")
 	Area.insert("1.0",file2.read())
 	file2.close()

@@ -353,22 +353,39 @@ def Raag_check(notestring, aarohastr, avrohastr):
 
     notes=notestring.split(" ")
     notes.append('E') 
-
+    print(notes)
 
     i=0
     a=0
     b=0
 
     while notes[i+1]!='E':
-        while notes[i+1]=='(' or notes[i+1]==')' or notes[i+1]=='_' or notes[i+1]=='.':
+        while notes[i]=='(' or notes[i]==')' or notes[i]=='_' or notes[i]=='x':
+            #print(notes[i])
             i=i+1
-        if notes[i+1]=='E':
+
+        if notes[i]=='E':
+            break
+
+        j=i+1
+
+        if notes[j]=='E':
+            break
+
+        while notes[j]=='(' or notes[j]==')' or notes[j]=='_' or notes[j]=='x':
+            #print(notes[j])
+            j=j+1
+
+        if notes[j]=='E':
             break
 
         c=0
         check=0
         notes1=notes[i].split('v')
-        notes2=notes[i+1].split('v')
+        notes2=notes[j].split('v')
+
+        print(notes1)
+        print(notes2)
 
         temp_aaroha=aaroha[hash_swara(notes1[0])].split(" ")
         temp_avroha=avroha[hash_swara(notes1[0])].split(" ")
@@ -389,12 +406,15 @@ def Raag_check(notestring, aarohastr, avrohastr):
                 break
             c=c+1
 
+        if notes2[0]==notes1[0] :
+            check=1
+
         if check==1 :
             a=a+1
         else :
             b=b+1
         
-        i=i+1
+        i=j
 
     return [a,b]
 
@@ -417,6 +437,7 @@ def Raag_result(ntestring, percentage) :
             i=0
             while Musicnotes2[i]!="E":
                 B=Raag_check(Musicnotes2[i],string[1],string[2])
+                #print(Musicnotes2[i])
                 A[0]=A[0]+B[0]
                 A[1]=A[1]+B[1]
                 i=i+1
@@ -431,8 +452,7 @@ def Raag_result(ntestring, percentage) :
             Result.append(string[0])
             Result.append((100*A[0])/(A[0]+A[1]))
 
-    #print(Result)
-    #Result.append("E")
+    Result.append("E")
     return Result
 
         
@@ -606,17 +626,21 @@ def keyboardMusicWrite(nandd, tuningnotes, instrumentno, channel, track, volume,
     return
 
 
-AddTabla("Teen",1,"Tabla.mid",60,150,0,255,1)
+#AddTabla("Teen",1,"Tabla.mid",60,150,0,255,1)
 
-MusicWrite("( P M ) P G _ M N^D D _ _ N D S. N D _ P", [], 40, 0, 0, 180, 100, 260, "Violin.mid")
+MusicWrite("P M P G _ M N^D D _ _ N D S. N D _ P", [], 40, 0, 0, 180, 100, 260, "Violin.mid")
 #MusicWrite("( R M ) ( P D ) M G / R G S R / M _ G S / R G .N S" , [], 40, 0, 1, 150, 100, 520, test)
+
 #MusicWrite("S R M P D P M R , M P D S.v3", [], 0, 0, 1, 150, 100, 130, "test.mid")
 
 inputfile = open('Ragas.txt')
 
 ni1=0
-Rwer=Raag_result("S R M P D P M R , M P D S.v3",60)
+Rwer=Raag_result("S R M ( P D ) P M R",60)
 
-# while Rwer[ni1]!='E' :
-#     print(Rwer[ni1])
-#     ni1=ni1+1
+while Rwer[ni1]!='E' :
+        print(Rwer[ni1])
+        ni1=ni1+1
+
+
+

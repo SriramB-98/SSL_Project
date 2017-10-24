@@ -32,10 +32,49 @@ tune_text = " "
 channel = 0
 track = 0
 tempo = 60
+tuplelist = []
 
 # mix1 = "Tabla.wav"
 # mix2 = "Violin.wav"
 mix = []
+letter = []
+end = 'o'
+
+# def s():
+# 	global letter
+# 	def callb(key):
+# 		global end;
+# 		ti1 = time.time() - t
+# 		ti1 = str(ti1) #converting float value to string
+# 		ti2 = ti1[0:5] #cutting the seconds ( time ) , without it , it will print like 0.233446546
+# 		#print("The key",key,"Pressed For",ti2,'seconds')
+# 		end = str(key)[2]
+# 		if end != 'x':
+# 			letter.append((str(key)[2] , ti2))
+# 			# letter.append(str(key)[2])
+# 			# duration.append(ti2)
+# 			print(str(key)[2])
+# 		# 	# print(ti2)
+# 			#print(letter)
+# 			#sys.exit()
+# 		return False #stop detecting more key-releases
+
+# 	def callb1(key): #what to do on key-press
+# 	    return False #stop detecting more key-presses
+
+
+# 	while True:
+# 		with keyboard.Listener(on_press = callb1) as listener1: #setting code for listening key-press
+# 	    		listener1.join()
+
+# 		t = time.time()
+
+# 		with keyboard.Listener(on_release = callb) as listener: #setting code for listening key-release
+# 	    		listener.join()
+# 	    	if end == 'x':
+# 				break
+
+# 	return letter
 
 # test = text_to_music.MIDIFile(adjust_origin=True)
 def combine(x, formattype): # x is a list of tuples ( wavname, starttime) sorted according to starttime, should start with 0 
@@ -276,7 +315,7 @@ def mQuit():
 	return
 
 def fileop():
-	filename = askopenfilename(initialdir = "/",title = "Select file")
+	filename = askopenfilename(title = "Select file")
 	file2 = open(filename,"r")
 	Area.insert("1.0",file2.read())
 	file2.close()
@@ -294,12 +333,33 @@ def setfile():
 	T_i = Text(m, height=1, width=4)
 	T_i.pack()
 	mlabel = Label(m , text = 'Starting Time').pack()
-	butt = Button(m , text = 'first file' , command = openfile1)
+	butt = Button(m , text = 'Select files' , command = openfile1)
 	butt.pack()
 	butt3 = Button( m , text = 'Mix Files!' , command = lambda : combine(mix , 'wav'))
 	butt3.pack()
 	m.mainloop()
 
+def execbash():
+	global safreq
+	global instru_n
+	global volume
+	global pitch
+	global text
+	global tabla_text
+	global tempo
+	global loops
+	global tuplelist
+	subprocess.call("./ba.sh")
+	text_file = open("tuple.txt" , "r")
+	lines = text_file.read().split('\n')
+	p = int((len(lines)-1)/2)
+	for i in range(p):
+		tuplelist.append((lines[2*i], float(lines[2*i+1])))
+	#print(tuplelist)
+	text_to_music.keyboardMusicWrite(tuplelist , [] , instru_n , 0 , 0 , volume, safreq , "keyboard.mid")
+	subprocess.call("./keyboard.sh")
+	mGui.destroy()
+	return
 
 def create_window():
 
@@ -415,18 +475,18 @@ menubar.add_cascade(label="Run",menu=runmenu)
 
 mGui.config(menu=menubar)
 
-Area = Text(mGui, height=8, width=20)
+Area = Text(mGui, height=6, width=20)
 Area.pack()
-mlabel = Label(mGui, text = 'Enter Text Here').pack()
+mlabel = Label(mGui, text = 'Enter Text for Music').pack()
 mlabel = Label(mGui, text = 'or').pack()
 mbutton = Button(mGui, text = 'Browse', command = fileop)
 mbutton.pack()
 
 mlabelblank = Label(mGui , text = ' ').pack()
 
-AreaT = Text(mGui, height=8, width=20)
+AreaT = Text(mGui, height=6, width=20)
 AreaT.pack()
-mlabelT = Label(mGui , text = 'Enter Text Here').pack()
+mlabelT = Label(mGui , text = 'Enter Text for Tabla').pack()
 
 
 T_l = Text(mGui, height=1, width=4)
@@ -475,6 +535,7 @@ mbuttonmix = Button(mGui , text = 'Mix Tracks' , command = setfile)
 mbuttonmix.pack()
 
 
+mbutton = Button(mGui , text = 'Music On Computer Keyboard!' , command = execbash).pack()
 #List1 = Listbox(mGui)
 #List1.pack()
 # mild = Radiobutton(mGui, text='Mild')
